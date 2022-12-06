@@ -4,7 +4,6 @@ import models.User;
 
 import static io.restassured.RestAssured.given;
 
-
 public class UserClient extends Client {
     private final String PATH_REGISTER =  "/api/auth/register";
     private final String PATH_LOGIN = "/api/auth/login";
@@ -47,7 +46,6 @@ public class UserClient extends Client {
     public ValidatableResponse deleteUser(String accessToken){
         return given()
                 .spec(getSpecification())
-                //.header()
                 .auth()
                 .oauth2(accessToken)
                 .when()

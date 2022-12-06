@@ -22,7 +22,7 @@ public class UserChangeDataTest {
     private  String accessToken;
     private String refreshToken;
     private UserClient userClient;
-    private ValidatableResponse responseLogin;
+
     public UserChangeDataTest(User user, int statusCodeExpected,  boolean successResultExpected) {
         this.user = user;
         this.statusCodeExpected = statusCodeExpected;
@@ -32,26 +32,28 @@ public class UserChangeDataTest {
     public static Object[][] getParameters() {
         return new Object[][]{
                 {UserGenerator.getDefaultUser(), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "x9x9x9x", "Irina"), SC_OK, true}
-                //{UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "incorrect", "Anna"), SC_UNAUTHORIZED, false},
-                //{UserGenerator.getUserFromParams("incorrect", "x9x9x9x", "Anna"), SC_UNAUTHORIZED, false},
-                //{UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "", "Anna"), SC_UNAUTHORIZED, false},
-               // {UserGenerator.getUserFromParams("", "x9x9x9x", "Anna"), SC_UNAUTHORIZED, false}
+                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "x9x9x9x", "Irina"), SC_OK, true},
+                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "qwerty", "Irina"), SC_UNAUTHORIZED, false}
+
         };
     }
 
     @Before
     public void setUp(){
         userClient = new UserClient();
-        responseLogin = userClient.loginUser(user);
+        ValidatableResponse responseLogin = userClient.loginUser(user);
         if (responseLogin.extract().statusCode() == SC_OK) {
             accessToken = responseLogin.extract().path("accessToken");
             accessToken = accessToken.split(" ")[1];
             refreshToken = responseLogin.extract().path("refreshToken");
         }
+        else {
+            accessToken = "";
+            refreshToken = "";
+        }
     }
     @After
-    public void cleanUp(){
+    public void cleanUp() {
         if (statusCodeActual == SC_OK) {
             userClient.changeUserData (user, accessToken);
             userClient.logoutUser(accessToken, refreshToken);
@@ -61,7 +63,7 @@ public class UserChangeDataTest {
     @Test
     @DisplayName("Авторизованный пользователь может обновить имя")
     public void userCanUpdateNameTest() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(5);
         User newUser = new User(user);
         newUser.setName("Anna");
         ValidatableResponse responseChange = userClient.changeUserData(newUser, accessToken);
@@ -102,6 +104,5 @@ public class UserChangeDataTest {
         ValidatableResponse responseChange = userClient.changeUserData(newUser, accessToken);
         statusCodeActual = responseChange.extract().statusCode();
         Assert.assertEquals(statusCodeExpected, statusCodeActual);
-
     }
 }

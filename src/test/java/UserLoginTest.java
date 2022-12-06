@@ -31,11 +31,11 @@ public class UserLoginTest {
 
         return new Object[][]{
                 {UserGenerator.getDefaultUser(), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "x9x9x9x", "Anna"), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "incorrect", "Anna"), SC_UNAUTHORIZED, false},
-                {UserGenerator.getUserFromParams("incorrect", "x9x9x9x", "Anna"), SC_UNAUTHORIZED, false},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "", "Anna"), SC_UNAUTHORIZED, false},
-                {UserGenerator.getUserFromParams("", "x9x9x9x", "Anna"), SC_UNAUTHORIZED, false}
+                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "x9x9x9x", "Irina"), SC_OK, true},
+                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "incorrect", "Irina"), SC_UNAUTHORIZED, false},
+                {UserGenerator.getUserFromParams("incorrect", "x9x9x9x", "Irina"), SC_UNAUTHORIZED, false},
+                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "", "Irina"), SC_UNAUTHORIZED, false},
+                {UserGenerator.getUserFromParams("", "x9x9x9x", "Irina"), SC_UNAUTHORIZED, false}
         };
     }
 
