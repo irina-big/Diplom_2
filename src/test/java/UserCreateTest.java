@@ -49,7 +49,6 @@ public class UserCreateTest {
             userClient.deleteUser(accessToken);
         }
     }
-
     @Test
     @DisplayName("Можно создать пользователя, заполнив все поля")
     public void userCanBeCreatedTest() throws InterruptedException {
@@ -62,9 +61,8 @@ public class UserCreateTest {
         }
         Assert.assertEquals(createStatusCodeExpected, createStatusCodeActual);
     }
-
     @Test
-    @DisplayName("Успешное создание пользователя возвращает status:true")
+    @DisplayName("Успешное создание пользователя возвращает success:true")
     public  void userSuccessCreatedReturnsStatusTrueTest() throws InterruptedException {
         TimeUnit.SECONDS.sleep(3);
         ValidatableResponse responseCreate = userClient.createUser(user);

@@ -22,7 +22,6 @@ public class UserChangeDataTest {
     private  String accessToken;
     private String refreshToken;
     private UserClient userClient;
-
     public UserChangeDataTest(User user, int statusCodeExpected,  boolean successResultExpected) {
         this.user = user;
         this.statusCodeExpected = statusCodeExpected;
@@ -32,14 +31,13 @@ public class UserChangeDataTest {
     public static Object[][] getParameters() {
         return new Object[][]{
                 {UserGenerator.getDefaultUser(), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "x9x9x9x", "Irina"), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "qwerty", "Irina"), SC_UNAUTHORIZED, false}
-
+                {UserGenerator.getUserFromParams("z9z9z9z@yandex.ru", "z9z9z9z", "Zara"), SC_OK, true},
+                {UserGenerator.getUserFromParams("z9z9z9z@yandex.ru", "qwerty", "Zara"), SC_UNAUTHORIZED, false}
         };
     }
-
     @Before
-    public void setUp(){
+    public void setUp() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(5);
         userClient = new UserClient();
         ValidatableResponse responseLogin = userClient.loginUser(user);
         if (responseLogin.extract().statusCode() == SC_OK) {
@@ -59,50 +57,62 @@ public class UserChangeDataTest {
             userClient.logoutUser(accessToken, refreshToken);
         }
     }
-
     @Test
     @DisplayName("Авторизованный пользователь может обновить имя")
-    public void userCanUpdateNameTest() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(5);
+    public void userCanUpdateNameTest() {
         User newUser = new User(user);
         newUser.setName("Anna");
         ValidatableResponse responseChange = userClient.changeUserData(newUser, accessToken);
         statusCodeActual = responseChange.extract().statusCode();
         Assert.assertEquals(statusCodeExpected, statusCodeActual);
+        Assert.assertEquals(successResultExpected, responseChange.extract().path("success"));
     }
-
     @Test
     @DisplayName("Авторизованный пользователь может обновить пароль")
-    public  void userCanUpdatePasswordTest() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(3);
+    public  void userCanUpdatePasswordTest() {
         User newUser = new User(user);
         newUser.setPassword("xxx");
         ValidatableResponse responseChange = userClient.changeUserData(newUser, accessToken);
         statusCodeActual = responseChange.extract().statusCode();
         Assert.assertEquals(statusCodeExpected, statusCodeActual);
+        Assert.assertEquals(successResultExpected, responseChange.extract().path("success"));
     }
-
     @Test
     @DisplayName("Авторизованный пользователь может обновить email")
-    public  void userCanUpdateEmailTest() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(3);
+    public  void userCanUpdateEmailTest() {
         User newUser = new User(user);
-        newUser.setEmail("z9z9z9z@yandex.ru");
+        newUser.setEmail("x0x0x0x0x@yandex.ru");
         ValidatableResponse responseChange = userClient.changeUserData(newUser, accessToken);
         statusCodeActual = responseChange.extract().statusCode();
         Assert.assertEquals(statusCodeExpected, statusCodeActual);
+        Assert.assertEquals(successResultExpected, responseChange.extract().path("success"));
     }
-
+    @Test
+    @DisplayName("Если изменить email на уже используемый, вернется ошибка")
+    public  void userCannotUpdateEmailIfExistsTest() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(3);
+        User locUser = UserGenerator.getDefaultUser();
+        ValidatableResponse responseLogin = userClient.loginUser(locUser);
+        String token = responseLogin.extract().path("accessToken");
+        token = token.split(" ")[1];
+        String refresh = responseLogin.extract().path("refreshToken");
+        User newUser = new User(locUser);
+        newUser.setEmail("login426@yandex.ru");
+        ValidatableResponse responseChange = userClient.changeUserData(newUser, token);
+        Assert.assertEquals(SC_FORBIDDEN, responseChange.extract().statusCode());
+        userClient.logoutUser(token, refresh);
+    }
     @Test
     @DisplayName("Авторизованный пользователь может обновить все поля")
-    public void userCanUpdateAllFieldsTest() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(3);
+    public void userCanUpdateAllFieldsTest() {
         User newUser = new User(user);
-        newUser.setEmail("z9z9z9z@yandex.ru");
-        newUser.setPassword("z9z9z9z");
-        newUser.setName("Zara");
+        newUser.setEmail("z0z0z0z@yandex.ru");
+        newUser.setPassword("z0z0z0z");
+        newUser.setName("Alla");
         ValidatableResponse responseChange = userClient.changeUserData(newUser, accessToken);
         statusCodeActual = responseChange.extract().statusCode();
         Assert.assertEquals(statusCodeExpected, statusCodeActual);
+        Assert.assertEquals(successResultExpected, responseChange.extract().path("success"));
+
     }
 }

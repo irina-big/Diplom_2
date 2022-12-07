@@ -54,7 +54,7 @@ public class OrdersTest {
     }
 
     @Test
-    @DisplayName("Авторизоваунный пользователь может создать заказ, а неавторизованный - нет")
+    @DisplayName("Пользователь может создать заказ с существующими ингредиентами")
     public  void createOrderTest() throws InterruptedException {
         TimeUnit.SECONDS.sleep(10);
         ValidatableResponse response = orderClient.createOrder(order, accessToken);

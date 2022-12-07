@@ -13,7 +13,6 @@ import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 public class ListOrdersTest {
         private OrderClient orderClient;
-
         @Before
         public void setUp() {
             orderClient = new OrderClient();
