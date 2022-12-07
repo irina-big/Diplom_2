@@ -4,35 +4,34 @@ import models.Order;
 
 import static io.restassured.RestAssured.given;
 
-public class OrderClient extends Client {
+public class  OrderClient extends Client {
         private final String PATH_ORDERS =  "/api/orders";
-        private final String PATH_CANCEL =  "/api/v1/orders/cancel?track=";
 
         @Step("Создать заказ")
-        public ValidatableResponse createOrder(Order order) {
+        public ValidatableResponse createOrder(Order order, String accessToken) {
             return given()
                     .spec(getSpecification())
+                    .auth()
+                    .oauth2(accessToken)
                     .body(order)
                     .when()
                     .post(PATH_ORDERS)
                     .then();
         }
-/*
-        @Step ("Отменить заказ")
-        public ValidatableResponse cancelOrder(Track track) {
-            return given()
-                    .spec(getSpecification())
-                    .when()
-                    .put(PATH_CANCEL + track.getTrack())
-                    .then();
-        }
-
- */
-
-        @Step ("Получить список всех заказов")
+        @Step ("Получить все заказы")
         public ValidatableResponse getListOrders() {
             return given()
                     .spec(getSpecification())
+                    .when()
+                    .get(PATH_ORDERS + "/all")
+                    .then();
+        }
+        @Step ("Получить заказы конкретного пользователя")
+        public ValidatableResponse getListUserOrders(String accessToken){
+            return given()
+                    .spec(getSpecification())
+                    .auth()
+                    .oauth2(accessToken)
                     .when()
                     .get(PATH_ORDERS)
                     .then();

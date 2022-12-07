@@ -1,14 +1,14 @@
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
-import static io.restassured.RestAssured.given;
-import models.LogPassUser;
 import models.User;
 
+import static io.restassured.RestAssured.given;
 
 public class UserClient extends Client {
     private final String PATH_REGISTER =  "/api/auth/register";
     private final String PATH_LOGIN = "/api/auth/login";
-    private final String PATH_DELETE = "/api/auth/user";
+    private final String PATH_USER = "/api/auth/user";
+    private final String PATH_LOGOUT = "/api/auth/logout";
 
     @Step("Создать пользователя")
     public ValidatableResponse createUser(User user){
@@ -21,23 +21,47 @@ public class UserClient extends Client {
     }
 
     @Step ("Авторизоваться в системе")
-    public ValidatableResponse loginUser(LogPassUser logPassUser){
+    public ValidatableResponse loginUser (User user){
         return  given()
                 .spec(getSpecification())
-                .body(logPassUser)
+                .body(user)
                 .when()
                 .post(PATH_LOGIN)
                 .then();
     }
 
-    @Step ("Удалить пользователя")
-    public ValidatableResponse deleteUser(User user){
-        return given()
+    @Step ("Изменить данные о пользователе")
+    public ValidatableResponse changeUserData(User newUser, String accessToken) {
+        return  given()
                 .spec(getSpecification())
-                .body(user)
+                .auth()
+                .oauth2(accessToken)
+                .body(newUser)
                 .when()
-                .delete(PATH_DELETE)
+                .patch(PATH_USER)
                 .then();
     }
 
+    @Step ("Удалить пользователя")
+    public ValidatableResponse deleteUser(String accessToken){
+        return given()
+                .spec(getSpecification())
+                .auth()
+                .oauth2(accessToken)
+                .when()
+                .delete(PATH_USER)
+                .then();
+    }
+
+    @Step ("Выйти из системы")
+    public ValidatableResponse logoutUser(String accessToken, String refreshToken){
+        return  given()
+                .spec(getSpecification())
+                .auth()
+                .oauth2(accessToken)
+                .body("{\"token\":\"" + refreshToken + "\"}")
+                .when()
+                .post(PATH_LOGOUT)
+                .then();
+    }
 }
