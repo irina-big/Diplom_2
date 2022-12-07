@@ -19,32 +19,27 @@ public class UserLoginTest {
     private final int StatusCodeExpected;
     private final boolean successResultExpected;
     private UserClient userClient;
-
     public UserLoginTest(User user, int StatusCodeExpected, boolean successResultExpected) {
         this.user = user;
         this.StatusCodeExpected = StatusCodeExpected;
         this.successResultExpected = successResultExpected;
     }
-
     @Parameterized.Parameters
     public static Object[][] getParameters() {
-
         return new Object[][]{
                 {UserGenerator.getDefaultUser(), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "x9x9x9x", "Irina"), SC_OK, true},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "incorrect", "Irina"), SC_UNAUTHORIZED, false},
-                {UserGenerator.getUserFromParams("incorrect", "x9x9x9x", "Irina"), SC_UNAUTHORIZED, false},
-                {UserGenerator.getUserFromParams("x9x9x9x@yandex.ru", "", "Irina"), SC_UNAUTHORIZED, false},
-                {UserGenerator.getUserFromParams("", "x9x9x9x", "Irina"), SC_UNAUTHORIZED, false}
+                {UserGenerator.getUserFromParams("login71@yandex.ru", "password929", "Alexandr"), SC_OK, true},
+                {UserGenerator.getUserFromParams("login71@yandex.ru", "incorrect", "Alexandr"), SC_UNAUTHORIZED, false},
+                {UserGenerator.getUserFromParams("incorrect", "password929", "Alexandr"), SC_UNAUTHORIZED, false},
+                {UserGenerator.getUserFromParams("login71@yandex.ru", "", "Alexandr"), SC_UNAUTHORIZED, false},
+                {UserGenerator.getUserFromParams("", "password929", "Alexandr"), SC_UNAUTHORIZED, false}
         };
     }
-
     @Before
     public void setUp() throws InterruptedException {
         userClient = new UserClient();
         TimeUnit.SECONDS.sleep(2);
     }
-
     @Test
     @DisplayName("Пользователь может авторизоваться")
     public void userCanLoginTest() {
@@ -52,9 +47,8 @@ public class UserLoginTest {
         int statusCodeActual = responseLogin.extract().statusCode();
         Assert.assertEquals(StatusCodeExpected, statusCodeActual);
     }
-
     @Test
-    @DisplayName("Успешное создание пользователя возвращает status:true")
+    @DisplayName("Успешная авторизация возвращает status:true")
     public void userSuccessLoginReturnsStatusTrueTest() {
         ValidatableResponse responseLogin = userClient.loginUser(user);
         boolean successResultActual = responseLogin.extract().path("success");

@@ -64,6 +64,4 @@ public class UserClient extends Client {
                 .post(PATH_LOGOUT)
                 .then();
     }
-
-
 }
